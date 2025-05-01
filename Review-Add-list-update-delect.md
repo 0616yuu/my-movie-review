@@ -1,6 +1,6 @@
 # 🎬 映画レビューアプリ - 構成と機能詳細まとめ
 
-このドキュメントは、React + TypeScript + Tailwind CSS で作成した「映画レビューアプリ」の構成と、実装済みの主要機能（投稿・一覧表示・更新・削除）について、わかりやすく詳細にまとめたものです。
+このドキュメントは、React + TypeScript + Tailwind CSS で作成した「映画レビューアプリ」の構成と、実装済みの主要機能（投稿・一覧表示・更新・削除・永続化）について、わかりやすく詳細にまとめたものです。
 
 ---
 
@@ -21,26 +21,25 @@ src/
 
 ## 🧩 使用している技術・仕組み
 
-- **React（Next.js App Router 構成）**
+- **React（Next.js App Router構成）**
 - **TypeScript（型安全）**
 - **Tailwind CSS（クラスベースのスタイリング）**
-- **useState / useEffect（状態管理）**
+- **useState / useEffect（状態管理と副作用処理）**
+- **localStorage（データ永続化）**
 
 ---
 
 ## ✍️ 投稿機能の流れ
 
 ### 🔹 入力欄（ReviewForm.tsx）
-
 ```tsx
-const [title, setTitle] = useState("");
-const [content, setContent] = useState("");
+const [title, setTitle] = useState('');
+const [content, setContent] = useState('');
 const [rating, setRating] = useState(initialRating);
-const [author, setAuthor] = useState("");
+const [author, setAuthor] = useState('');
 ```
 
 ### 🔹 投稿処理
-
 ```tsx
 const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
@@ -54,9 +53,9 @@ const handleSubmit = (e: React.FormEvent) => {
   };
   onAdd(newReview);
   // 入力欄を初期化
-  setTitle("");
-  setContent("");
-  setAuthor("");
+  setTitle('');
+  setContent('');
+  setAuthor('');
   setRating(initialRating);
 };
 ```
@@ -72,9 +71,7 @@ const handleSubmit = (e: React.FormEvent) => {
       <h3>{review.title}</h3>
       <p>{review.content}</p>
       <p>{review.rating}/10</p>
-      <p>
-        投稿者: {review.author} / 投稿日: {review.createdAt}
-      </p>
+      <p>投稿者: {review.author} / 投稿日: {review.createdAt}</p>
       <button onClick={() => setEditingReview(review)}>編集</button>
       <button onClick={() => handleDelete(review.id)}>削除</button>
     </li>
@@ -87,15 +84,13 @@ const handleSubmit = (e: React.FormEvent) => {
 ## 🔄 編集機能の流れ
 
 ### 🔹 編集ボタンの処理
-
 ```tsx
 const [editingReview, setEditingReview] = useState<Review | null>(null);
 
-<button onClick={() => setEditingReview(review)}>編集</button>;
+<button onClick={() => setEditingReview(review)}>編集</button>
 ```
 
 ### 🔹 ReviewForm に渡す
-
 ```tsx
 <ReviewForm
   editing={editingReview}
@@ -105,7 +100,6 @@ const [editingReview, setEditingReview] = useState<Review | null>(null);
 ```
 
 ### 🔹 useEffect で編集内容をセット
-
 ```tsx
 useEffect(() => {
   if (editing) {
@@ -118,7 +112,6 @@ useEffect(() => {
 ```
 
 ### 🔹 更新処理
-
 ```tsx
 if (editing) {
   onUpdate(updatedReview);
@@ -132,12 +125,39 @@ if (editing) {
 ## ❌ 削除機能の流れ
 
 ### 🔹 削除処理
-
 ```tsx
 const handleDelete = (id: string) => {
   setReviews(reviews.filter((review) => review.id !== id));
 };
 ```
+
+---
+
+## 💾 データの永続化（localStorage × useEffect）
+
+レビューを永続化するために、`localStorage` を使用して保存・復元しています。
+
+### ✅ 実装パターン（2つの useEffect）
+
+```tsx
+// 1番目：読み込み処理（最初の一回だけ）
+useEffect(() => {
+  const saved = localStorage.getItem("reviews");
+  if (saved) {
+    setReviews(JSON.parse(saved));
+  }
+}, []);
+
+// 2番目：保存処理（レビュー配列が変わるたびに保存）
+useEffect(() => {
+  localStorage.setItem("reviews", JSON.stringify(reviews));
+}, [reviews]);
+```
+
+### ✨ 効果
+- ページをリロードしてもレビューが消えない！
+- `localStorage` の内容を復元してからアプリが表示される！
+- `hasLoaded` フラグは不要なため、シンプルに実装可能！
 
 ---
 
@@ -158,15 +178,17 @@ export type Review = {
 
 ## ✅ 状態管理フローまとめ
 
-| 操作     | 子コンポーネント | 親が持つ処理                    | 更新対象           |
-| -------- | ---------------- | ------------------------------- | ------------------ |
-| 投稿     | `ReviewForm.tsx` | `onAdd(newReview)`              | `reviews[]` に追加 |
-| 一覧表示 | `ReviewList.tsx` | `reviews.map()`                 | 表示だけ           |
-| 編集開始 | `ReviewList.tsx` | `setEditingReview(review)`      | `editingReview`    |
-| 編集投稿 | `ReviewForm.tsx` | `onUpdate(updatedReview)`       | 該当レビューを更新 |
-| 削除     | `ReviewList.tsx` | `handleDelete(id)` → `filter()` | 該当レビューを削除 |
+| 操作       | 子コンポーネント      | 親が持つ処理                         | 更新対象        |
+|------------|------------------------|--------------------------------------|-----------------|
+| 投稿       | `ReviewForm.tsx`       | `onAdd(newReview)`                   | `reviews[]` に追加 |
+| 一覧表示   | `ReviewList.tsx`       | `reviews.map()`                      | 表示だけ         |
+| 編集開始   | `ReviewList.tsx`       | `setEditingReview(review)`           | `editingReview`  |
+| 編集投稿   | `ReviewForm.tsx`       | `onUpdate(updatedReview)`            | 該当レビューを更新 |
+| 削除       | `ReviewList.tsx`       | `handleDelete(id)` → `filter()`     | 該当レビューを削除 |
+| 永続化     | `ReviewList.tsx`       | `useEffect + localStorage`           | データ保存 & 復元 |
 
 ---
 
 以上が、現時点での「映画レビューアプリ」の構成と実装フローです。
-今後は「いいねボタン」や「並び替え」「Firebase 保存」などの追加機能も予定しています 🌟
+今後は「いいねボタン」や「並び替え」「Firebase保存」などの追加機能も予定しています 🌟
+

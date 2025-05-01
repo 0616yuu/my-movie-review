@@ -1,12 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import ReviewForm from './ReviewForm';
-import { Review } from '../../types/Review';
+import { useState, useEffect, use } from "react";
+import ReviewForm from "./ReviewForm";
+import { Review } from "../../types/Review";
 
 export default function ReviewList() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
+  
+
+  /* 読み込み処理（最初の一回だけ） 1番目*/
+  useEffect(() => {
+    const saved = localStorage.getItem("reviews");
+    if (saved) {
+      setReviews(JSON.parse(saved));
+    }
+  }, []);
+  /* 保存処理（レビュー配列が変わるたびに保存） ２番目*/
+  useEffect(() => {
+    localStorage.setItem("reviews", JSON.stringify(reviews));
+  }, [reviews]);
+
 
   const handleAddReview = (newReview: Review) => {
     setReviews([newReview, ...reviews]);
