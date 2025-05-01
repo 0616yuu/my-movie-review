@@ -1,12 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import Header from "@/components/Header";
+// import ReviewForm from "@/components/ReviewForm";
+import ReviewList from "@/components/ReviewList";
+import { useState } from "react";
 
-export default function Page() {
-  const [selectedGenre , setSelectedGenre] = useState<string>('');
+export default function page() {
   return (
-    <main className='p-4'>
-      
-    </main>
+    <div>
+      <Header />
+      <ReviewList />
+    </div>
   );
 }

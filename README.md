@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 映画レビューアプリ
 
-## Getting Started
+React × TypeScript × Tailwind CSS を使って作成した映画レビュー投稿アプリです。  
+映画のタイトル・感想・評価・投稿者名を入力して、レビューを追加・編集・削除できます。
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🔧 使用技術
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- フレームワーク: **Next.js**（App Router構成）
+- 言語: **TypeScript**
+- UIスタイル: **Tailwind CSS**
+- 状態管理: **useState / useEffect**
+- コンポーネント構成: **ReviewForm / ReviewList**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📸 機能一覧
 
-## Learn More
+| 機能         | 内容                                                                 |
+|--------------|----------------------------------------------------------------------|
+| ✅ 投稿       | タイトル、本文、評価（1〜10）、投稿者名を入力してレビュー投稿可能              |
+| ✅ 一覧表示   | 投稿されたレビューをリスト形式で表示。タイトル・評価・投稿者名・日付を含む        |
+| ✅ 編集       | 任意のレビューを編集モードでフォームに読み込み、上書きして更新可能              |
+| ✅ 削除       | 任意のレビューを削除可能                                              |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧩 型定義（`types/Review.ts`）
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```ts
+export type Review = {
+  id: string;
+  title: string;
+  content: string;
+  rating: number;
+  author: string;
+  createdAt: string;
+  
+---  
 
-## Deploy on Vercel
+## 🧩 ディレクトリ構成（抜粋）  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```ts
+  src/
+├── app/
+│   └── page.tsx
+├── components/
+│   ├── ReviewForm.tsx
+│   └── ReviewList.tsx
+├── types/
+│   └── Review.ts
