@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Review } from '../../types/Review';
+import { useState, useEffect } from "react";
+import { Review } from "../../types/Review";
 
 type Props = {
   onAdd: (review: Review) => void;
@@ -9,6 +9,7 @@ type Props = {
   initialRating: number;
   formTitle: string;
   editing?: Review | null;
+  onClose: () => void;
 };
 
 export default function ReviewForm({
@@ -17,11 +18,12 @@ export default function ReviewForm({
   initialRating,
   formTitle,
   editing,
+  onClose,
 }: Props) {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [rating, setRating] = useState(initialRating);
-  const [author, setAuthor] = useState('');
+  const [author, setAuthor] = useState("");
 
   useEffect(() => {
     if (editing) {
@@ -41,9 +43,7 @@ export default function ReviewForm({
       content,
       rating,
       author,
-      createdAt: editing
-        ? editing.createdAt
-        : new Date().toLocaleString(),
+      createdAt: editing ? editing.createdAt : new Date().toLocaleString(),
     };
 
     if (editing) {
@@ -52,16 +52,18 @@ export default function ReviewForm({
       onAdd(newReview);
     }
 
-    setTitle('');
-    setContent('');
-    setAuthor('');
+    setTitle("");
+    setContent("");
+    setAuthor("");
     setRating(initialRating);
+
+    onClose();
   };
 
   return (
     <div>
-      <form onSubmit={ClickSubmit} className="p-4 space-y-4">
-        <h2>{formTitle}</h2>
+      <form onSubmit={ClickSubmit} className="p-10 space-y-6">
+        <h2 className="text-lg font-bold">{formTitle}</h2>
 
         <div>
           <label className="block font-bold">
@@ -70,7 +72,7 @@ export default function ReviewForm({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border p-2 w-full"
+              className="border p-2 w-full "
               required
             />
           </label>
@@ -121,7 +123,7 @@ export default function ReviewForm({
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded"
         >
-          {editing ? '更新する' : '投稿する'}
+          {editing ? "更新する" : "投稿する"}
         </button>
       </form>
     </div>

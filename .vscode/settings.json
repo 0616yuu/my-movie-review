@@ -1,0 +1,21 @@
+{
+  "powermode.enabled": true,
+  "powermode.customExplosions": [
+    "https://media.giphy.com/media/WngnWxxekMn8DIqmwQ/giphy.gif"
+  ],
+  "powermode.customCss": {
+    "top": "-30px",
+    "z-index": 1,
+    "height": "70px",
+    "width": "70px"
+  },
+  "powermode.enableShake": false,
+  "powermode.maxExplosions": 1,
+  "powermode.explosionFrequency": 20,
+
+  // 👇 ここから追加部分
+  // "editor.formatOnSave": false,
+  // "editor.formatOnType": false,
+  // "headwind.runOnSave": false
+}
+
